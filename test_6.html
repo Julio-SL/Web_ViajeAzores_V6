@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>São Miguel – Rutas y Lugares de Interés</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .header {
+      background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url('IMG_5188.jpeg') no-repeat center center;
+      background-size: cover;
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+      border-radius: 0 0 15px 15px;
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: 2rem;
+    }
+    .header h1,
+    .header p {
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+    }
+    .header h1 {
+      font-weight: 700;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #e9ecef;
+    }
+    #map {
+      height: 80vh;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .footer {
+      background-color: #343a40;
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+    }
+    .difficulty-chip {
+      padding: 0.25em 0.6em;
+      border-radius: 1em;
+      font-size: 0.8em;
+      color: white;
+    }
+    .difficulty-Fácil { background-color: #28a745; }
+    .difficulty-Moderada { background-color: #ffc107; color: #212529 !important; }
+    .difficulty-Difícil { background-color: #dc3545; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="container">
+    <h1 class="display-4">FAMILIA de AL FILO DE LO POSIBLE</h1>
+    <p class="lead">Isla São Miguel (Azores)</p>
+  </div>
+</div>
+
+<div class="container mt-5">
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="rutas-tab" data-bs-toggle="tab" data-bs-target="#rutas" type="button" role="tab" aria-controls="rutas" aria-selected="true">Rutas de Senderismo</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="spots-tab" data-bs-toggle="tab" data-bs-target="#spots" type="button" role="tab" aria-controls="spots" aria-selected="false">Lugares de Interés</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="mapa-tab" data-bs-toggle="tab" data-bs-target="#mapa" type="button" role="tab" aria-controls="mapa" aria-selected="false">Mapa Interactivo</button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="rutas" role="tabpanel" aria-labelledby="rutas-tab">
+      <div class="table-responsive mt-4">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Ruta</th>
+              <th>Kms</th>
+              <th>Desnivel (+m)</th>
+              <th>Dificultad</th>
+              <th>Enlaces</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-rutas"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="spots" role="tabpanel" aria-labelledby="spots-tab">
+      <div class="table-responsive mt-4">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Lugar</th>
+              <th>Categoría</th>
+              <th>Coordenadas</th>
+              <th>Google Maps</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-spots"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="mapa" role="tabpanel" aria-labelledby="mapa-tab">
+      <div class="mt-4">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer mt-5">
+  <div class="container">
+    <p>&copy; 2025 - Un viaje inolvidable por las Azores.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+const rutas = [
+  { titulo:"⭐ Praia – Lagoa do Fogo (PRC02 SMI)", kms:11.0, desnivel:550, dificultad:"Moderada",
+    inicio:[37.7278,-25.4715],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/praia-lagoa-do-fogo",
+    wikiloc:"https://es.wikiloc.com/rutas-senderismo/prc2-smi-praia-lagoa-do-fogo-39830997" },
+
+  { titulo:"⭐ Pico da Vara (PRC07 SMI)", kms:7.0, desnivel:500, dificultad:"Difícil",
+    inicio:[37.8003,-25.1312],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/pico-da-vara",
+    wikiloc:"https://es.wikiloc.com/rutas-senderismo/pico-da-vara-prc-07-smi-35130990" },
+
+  { titulo:"⭐ Mata do Canário → Sete Cidades (PR4 SMI)", kms:11.8, desnivel:300, dificultad:"Moderada",
+    inicio:[37.8510,-25.7800],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/mata-do-canario-sete-cidades",
+    wikiloc:"https://es.wikiloc.com/rutas-senderismo/pr-4-smi-mata-do-canario-sete-cidades-18577395" },
+
+  { titulo:"⭐ Rota da Água – Janela do Inferno (PRC37 SMI)", kms:7.5, desnivel:250, dificultad:"Moderada",
+    inicio:[37.7875,-25.5971],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/rota-da-agua-janela-do-inferno",
+    wikiloc:"https://es.wikiloc.com/rutas-senderismo/prc-37-rota-da-agua-janela-do-inferno-13932537" },
+
+  { titulo:"Serra Devassa (PRC05 SMI)", kms:5.0, desnivel:170, dificultad:"Fácil",
+    inicio:[37.8520,-25.7540],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/serra-devassa",
+    wikiloc:"https://es.wikiloc.com/rutas-senderismo/prc05-sao-miguel-serra-devassa-55107613" },
+
+  { titulo:"⭐ Salto do Cabrito (circular)", kms:8.5, desnivel:400, dificultad:"Moderada",
+    inicio:[37.7800,-25.4880],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/caldeiras-da-ribeira-grande-salto-do-cabrito",
+    wikiloc:"https://es.wikiloc.com/rutas-senderismo/salto-do-cabrito-10284940" },
+
+  { titulo:"⭐ Lagoa das Furnas (PRC06 SMI)", kms:9.3, desnivel:160, dificultad:"Fácil",
+    inicio:[37.7690,-25.3300],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/furnas",
+    wikiloc:"https://es.wikiloc.com/rutas-senderismo/prc06-smi-lagoa-das-furnas-55406349" },
+
+  { titulo:"Trilho do Chá Gorreana (PRC28 SMI)", kms:3.8, desnivel:160, dificultad:"Fácil",
+    inicio:[37.8230,-25.3120],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/cha-gorreana",
+    wikiloc:"https://es.wikiloc.com/rutas-senderismo/cha-gorreana-prc-28-smi-26333771" },
+
+  { titulo:"Praia da Viola (PR27 SMI) – circular", kms:7.0, desnivel:300, dificultad:"Moderada",
+    inicio:[37.8140,-25.3125],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/praia-da-viola",
+    wikiloc:"https://es.wikiloc.com/rutas-senderismo/trilho-da-praia-da-viola-pr-27-smi-molinos-e-cascata-maia-sao-miguel-132148943" },
+
+  { titulo:"⭐ Ribeira Funda → Praia da Viola → Maia (costa norte)", kms:8.7, desnivel:450, dificultad:"Moderada",
+    inicio:[37.8700,-25.3050],
+    wikiloc:"https://www.wikiloc.com/walking-trails/ribeira-funda-miradouro-da-eira-praia-da-viola-maia-165152532" },
+
+  { titulo:"Trilho do Agrião (PR12 SMI) – Povoação → Ribeira Quente", kms:15.3, desnivel:800, dificultad:"Difícil",
+    inicio:[37.7470,-25.2355],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/agriao",
+    wikiloc:"https://www.wikiloc.com/hiking-trails/trilho-do-agriao-prc-12-smi-ribeira-quente-san-miguel-azores-122924020" },
+
+  { titulo:"⭐ Faial da Terra → Salto do Prego + Salto do Cagarrão (extendida)", kms:6.5, desnivel:380, dificultad:"Moderada",
+    inicio:[37.7618,-25.1885],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/sanguinho",
+    wikiloc:"https://www.wikiloc.com/hiking-trails/faial-da-terra-salto-do-prego-salto-do-cagarao-189035491" },
+
+  { titulo:"Lagoa do Congro + Lagoa dos Nenúfares", kms:3.5, desnivel:100, dificultad:"Fácil",
+    inicio:[37.7566,-25.4078],
+    wikiloc:"https://pt.wikiloc.com/trilhas-trekking/lagoa-do-congro-13644473" },
+
+  { titulo:"Ponta da Madrugada → Ponta do Sossego (costa Nordeste)", kms:9.0, desnivel:250, dificultad:"Moderada",
+    inicio:[37.8056,-25.1273],
+    wikiloc:"https://pt.wikiloc.com/trilhas-caminhada/ponta-do-sossego-17922381" },
+
+  { titulo:"Pico da Cruz (Sete Cidades)", kms:4.0, desnivel:200, dificultad:"Moderada",
+    inicio:[37.8350,-25.7586],
+    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/mata-do-canario-sete-cidades",
+    wikiloc:"https://pt.wikiloc.com/trilhas-trekking/lagoa-azul-pico-da-cruz-lagoa-do-canario-desde-sete-cidades-213123427" }
+];
+
+const spots = [
+  { nombre:"Miradouro da Boca do Inferno", categoria:"Mirador", coords:[37.8647,-25.7708] },
+  { nombre:"Lagoa do Fogo (miradores)", categoria:"Lago", coords:[37.7700,-25.4650] },
+  { nombre:"Caldeira Velha", categoria:"Termas/Cascada", coords:[37.7816,-25.4996] },
+  { nombre:"Ponta da Ferraria", categoria:"Costa/Termal", coords:[37.8608,-25.8525] },
+  { nombre:"Ilhéus dos Mosteiros", categoria:"Costa", coords:[37.8889,-25.8344] },
+  { nombre:"Parque Ribeira dos Caldeirões", categoria:"Parque/Cascadas", coords:[37.8647,-25.2120] },
+  { nombre:"Miradouro de Santa Iria", categoria:"Mirador", coords:[37.8397,-25.4011] },
+  { nombre:"Pico do Ferro (Furnas)", categoria:"Mirador", coords:[37.7809,-25.3289] },
+  { nombre:"Salto do Cabrito", categoria:"Cascada", coords:[37.7802,-25.4885] },
+  { nombre:"Poço Azul (Nordeste)", categoria:"Poza", coords:[37.8150,-25.1295] }
+];
+
+const fmt = (n) => typeof n === "number" ? n.toFixed(n % 1 ? 1 : 0) : "";
+const gmaps = ([lat, lon]) => `https://www.google.com/maps?q=${lat},${lon}`;
+const formatCoords = ([lat, lon]) => `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+
+(function renderTables() {
+  const tbR = document.getElementById('tbody-rutas');
+  rutas.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.titulo}</td>
+      <td>${fmt(r.kms)}</td>
+      <td>${fmt(r.desnivel)}</td>
+      <td><span class="difficulty-chip difficulty-${r.dificultad}">${r.dificultad}</span></td>
+      <td>
+        ${r.oficial ? `<a href="${r.oficial}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">Oficial</a>` : ""}
+        ${r.wikiloc ? `<a href="${r.wikiloc}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Wikiloc</a>` : ""}
+      </td>`;
+    tbR.appendChild(tr);
+  });
+
+  const tbS = document.getElementById('tbody-spots');
+  spots.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${s.nombre}</td>
+      <td>${s.categoria}</td>
+      <td>${formatCoords(s.coords)}</td>
+      <td><a href="${gmaps(s.coords)}" target="_blank" rel="noopener" class="btn btn-sm btn-success">Abrir en Maps</a></td>`;
+    tbS.appendChild(tr);
+  });
+})();
+
+let map;
+document.addEventListener('DOMContentLoaded', () => {
+  const mapTab = document.getElementById('mapa-tab');
+  mapTab.addEventListener('shown.bs.tab', function (e) {
+    if (!map) {
+      map = L.map('map').setView([37.78, -25.50], 10);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      const rutaIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+
+      const spotIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+
+      const allMarkers = [];
+
+      rutas.forEach(r => {
+        const mk = L.marker(r.inicio, {icon: rutaIcon}).addTo(map)
+          .bindPopup(`
+            <b>${r.titulo}</b><br>
+            ${fmt(r.kms)} km · +${fmt(r.desnivel)} m · ${r.dificultad}<br>
+            ${r.oficial ? `<a href="${r.oficial}" target="_blank" rel="noopener">Oficial</a>` : ''}
+            ${r.wikiloc ? `${r.oficial ? ' · ' : ''}<a href="${r.wikiloc}" target="_blank" rel="noopener">Wikiloc</a>` : ''}
+          `);
+        allMarkers.push(mk);
+      });
+
+      spots.forEach(s => {
+        const mk = L.marker(s.coords, {icon: spotIcon}).addTo(map)
+          .bindPopup(`<b>${s.nombre}</b><br>${s.categoria}`);
+        allMarkers.push(mk);
+      });
+
+      if (allMarkers.length) {
+        const group = L.featureGroup(allMarkers);
+        map.fitBounds(group.getBounds().pad(0.1));
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>
