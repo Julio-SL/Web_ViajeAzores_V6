@@ -1,0 +1,293 @@
+:root {
+    --primary-color: #006494; /* Azul profundo del océano */
+    --secondary-color: #00a896; /* Verde exuberante */
+    --accent-color: #f5a623; /* Acento cálido (sol) */
+    --dark-color: #2c3e50; /* Negro volcánico */
+    --light-color: #f8f9fa;
+    --text-color: #34495e;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    background-color: var(--light-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-color: var(--dark-color);
+    color: white;
+    text-align: center;
+    padding: 1.5rem 1rem;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+main {
+    flex-grow: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+footer {
+    background-color: var(--dark-color);
+    color: #ccc;
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.8rem;
+}
+
+/* Tabs */
+[role="tablist"] {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 2px solid #ddd;
+}
+
+[role="tab"] {
+    padding: 0.8rem 1.2rem;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease-in-out;
+}
+
+[role="tab"]:hover, [role="tab"]:focus {
+    background-color: #e9f5ff;
+    outline: 2px solid var(--accent-color);
+    outline-offset: -2px;
+}
+
+[role="tab"][aria-selected="true"] {
+    border-bottom-color: var(--primary-color);
+    color: var(--dark-color);
+    font-weight: 700;
+}
+
+.tab-panels {
+    padding-top: 1.5rem;
+}
+
+[role="tabpanel"] h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+/* Cards & Grids */
+.card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 1rem;
+}
+
+.card-highlight {
+    background-color: #fffbe6;
+    border-left: 5px solid var(--accent-color);
+}
+
+.info-grid, .gastro-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .gastro-grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+}
+
+.card h3 {
+    margin-top: 0;
+    color: var(--dark-color);
+}
+
+.card h4 {
+    margin: 1rem 0 0.5rem;
+    color: var(--primary-color);
+}
+
+.card ul {
+    list-style: none;
+    padding-left: 0;
+}
+.card li {
+    padding: 0.25rem 0;
+    position: relative;
+    padding-left: 1.5rem;
+}
+.card li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--secondary-color);
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.button-link {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+    transition: background-color 0.2s;
+    text-align: center;
+}
+.button-link:hover {
+    background-color: #004b6b;
+}
+
+/* Accordion */
+.accordion-item {
+    border-bottom: 1px solid #ddd;
+}
+.accordion-header {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    padding: 1rem;
+    text-align: left;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    color: var(--dark-color);
+}
+.accordion-header::after {
+    content: '+';
+    position: absolute;
+    right: 1rem;
+    font-size: 1.5rem;
+    transition: transform 0.2s ease;
+}
+.accordion-header[aria-expanded="true"]::after {
+    transform: rotate(45deg);
+}
+.accordion-content {
+    padding: 0 1rem 1rem 1rem;
+    display: none;
+}
+.accordion-header[aria-expanded="true"] + .accordion-content {
+    display: block;
+}
+
+/* Trekking Table */
+.trek-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+}
+.trek-table caption {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    color: var(--secondary-color);
+}
+.trek-table th, .trek-table td {
+    padding: 0.8rem;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+}
+.trek-table th {
+    background-color: var(--secondary-color);
+    color: white;
+}
+@media (max-width: 600px) {
+    .trek-table thead {
+        display: none;
+    }
+    .trek-table, .trek-table tbody, .trek-table tr, .trek-table td {
+        display: block;
+        width: 100%;
+    }
+    .trek-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+    }
+    .trek-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border: none;
+        border-bottom: 1px solid #eee;
+    }
+    .trek-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 1rem;
+        font-weight: bold;
+        text-align: left;
+    }
+}
+
+
+/* Map */
+#map {
+    height: 500px;
+    width: 100%;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 1rem;
+}
+#map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+}
+#map-legend p {
+    display: flex;
+    align-items: center;
+}
+.legend-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 1px solid #555;
+}
+.alojamiento-icon { 
+    background-color: var(--accent-color);
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z"/></svg>');
+    mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z"/></svg>');
+}
+.trekking-icon { background-color: var(--secondary-color); }
+.interes-icon { background-color: var(--primary-color); }

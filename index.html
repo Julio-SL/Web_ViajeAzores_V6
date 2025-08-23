@@ -1,307 +1,417 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FAMILIA de AL FILO DE LO POSIBLE</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f8f9fa;
-    }
-    .header {
-      background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url('IMG_5188.jpeg') no-repeat center center;
-      background-size: cover;
-      color: white;
-      padding: 4rem 2rem;
-      text-align: center;
-      border-radius: 0 0 15px 15px;
-      min-height: 50vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding-bottom: 2rem;
-    }
-    .header h1,
-    .header p {
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
-    }
-    @media (max-width: 576px) {
-      .header { min-height: 35vh; }
-    }
-    .header h1 {
-      font-weight: 700;
-    }
-    .table-hover tbody tr:hover {
-      background-color: #e9ecef;
-    }
-    #map {
-      height: 80vh;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-    .footer {
-      background-color: #343a40;
-      color: white;
-      padding: 2rem 0;
-      text-align: center;
-    }
-    .difficulty-chip {
-      padding: 0.25em 0.6em;
-      border-radius: 1em;
-      font-size: 0.8em;
-      color: white;
-    }
-    .difficulty-Fácil { background-color: #28a745; }
-    .difficulty-Moderada { background-color: #ffc107; color: #212529 !important; }
-    .difficulty-Difícil { background-color: #dc3545; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Viaje a las Azores 2025</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
 </head>
 <body>
 
-<header class="header">
-  <h1 class="display-4">FAMILIA de AL FILO DE LO POSIBLE</h1>
-  <p class="lead">Isla São Miguel (Azores)</p>
-</header>
+    <header>
+        <h1><span aria-label="Volcán" role="img">🌋</span> Plan de Viaje: Azores 2025 <span aria-label="Ballena" role="img">🐋</span></h1>
+        <p>Familia al Filo | 24 al 31 de agosto de 2025</p>
+    </header>
 
-<div class="container mt-5">
-  <ul class="nav nav-tabs" id="myTab" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="rutas-tab" data-bs-toggle="tab" data-bs-target="#rutas" type="button" role="tab" aria-controls="rutas" aria-selected="true">Rutas de Senderismo</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="spots-tab" data-bs-toggle="tab" data-bs-target="#spots" type="button" role="tab" aria-controls="spots" aria-selected="false">Lugares de Interés</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="mapa-tab" data-bs-toggle="tab" data-bs-target="#mapa" type="button" role="tab" aria-controls="mapa" aria-selected="false">Mapa Interactivo</button>
-    </li>
-  </ul>
+    <main>
+        <div class="tabs-container">
+            <div role="tablist" aria-label="Navegación del plan de viaje">
+                <button role="tab" aria-selected="true" aria-controls="info-panel" id="info-tab">
+                    <span aria-label="Icono de portapapeles" role="img">📋</span> Información General
+                </button>
+                <button role="tab" aria-selected="false" aria-controls="itinerary-panel" id="itinerary-tab" tabindex="-1">
+                    <span aria-label="Icono de mapa" role="img">🗺️</span> Itinerario Detallado
+                </button>
+                <button role="tab" aria-selected="false" aria-controls="map-panel" id="map-tab" tabindex="-1">
+                    <span aria-label="Icono de chincheta" role="img">📍</span> Mapa Interactivo
+                </button>
+                <button role="tab" aria-selected="false" aria-controls="gastro-panel" id="gastro-tab" tabindex="-1">
+                    <span aria-label="Icono de plato y cubiertos" role="img">🍽️</span> Gastronomía
+                </button>
+                <button role="tab" aria-selected="false" aria-controls="tips-panel" id="tips-tab" tabindex="-1">
+                    <span aria-label="Icono de bombilla" role="img">💡</span> Consejos y Enlaces
+                </button>
+            </div>
 
-  <div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade show active" id="rutas" role="tabpanel" aria-labelledby="rutas-tab">
-      <div class="table-responsive mt-4">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Ruta</th>
-              <th>Kms</th>
-              <th>Desnivel (+m)</th>
-              <th>Dificultad</th>
-              <th>Enlaces</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-rutas"></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="tab-pane fade" id="spots" role="tabpanel" aria-labelledby="spots-tab">
-      <div class="table-responsive mt-4">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Lugar</th>
-              <th>Categoría</th>
-              <th>Coordenadas</th>
-              <th>Google Maps</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-spots"></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="tab-pane fade" id="mapa" role="tabpanel" aria-labelledby="mapa-tab">
-      <div class="mt-4">
-        <div id="map"></div>
-      </div>
-    </div>
-  </div>
-</div>
+            <div class="tab-panels">
+                <section id="info-panel" role="tabpanel" tabindex="0" aria-labelledby="info-tab">
+                    <h2><span aria-label="Icono de portapapeles" role="img">📋</span> Información General</h2>
+                    <div class="info-grid">
+                        <div class="card">
+                            <h3><span aria-label="Icono de avión" role="img">✈️</span> Vuelos</h3>
+                            <p><strong>Compañía:</strong> Azores Airlines (Operado por TAP Portugal)</p>
+                            <p><strong>Localizador:</strong> JO9JDD</p>
+                            <hr>
+                            <h4>IDA (24/08/2025)</h4>
+                            <ul>
+                                <li><strong>VLC → LIS:</strong> 05:55 → 06:40 (1h 45m)</li>
+                                <li><strong>Escala en Lisboa:</strong> 7h 30m</li>
+                                <li><strong>LIS → PDL:</strong> 14:10 → 15:40 (2h 30m)</li>
+                            </ul>
+                            <h4>VUELTA (31/08/2025)</h4>
+                             <ul>
+                                <li><strong>PDL → LIS:</strong> 09:50 → 13:05 (2h 15m)</li>
+                                <li><strong>Escala en Lisboa:</strong> 1h 50m</li>
+                                <li><strong>LIS → VLC:</strong> 14:55 → 17:30 (1h 35m)</li>
+                            </ul>
+                            <a href="https://drive.google.com/file/d/1XohFfB6cLC1Gl97fbvKORcTATpv5wJgB/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="button-link">Ver reserva de vuelos</a>
+                        </div>
 
-<footer class="footer mt-5">
-  <div class="container">
-    <p>&copy; 2025 - Un viaje inolvidable por las Azores.</p>
-  </div>
-</footer>
+                        <div class="card">
+                            <h3><span aria-label="Icono de casa" role="img">🏡</span> Alojamiento</h3>
+                            <p><strong>Nombre:</strong> La Casita Felizola</p>
+                            <p><strong>Zona:</strong> São Pedro</p>
+                             <a href="https://www.google.com/maps?q=37.83016034381474,-25.668308474579405" target="_blank" rel="noopener noreferrer" class="button-link">Ubicación en Google Maps</a>
+                             <a href="https://drive.google.com/file/d/1RajCDg-ALtYb38xpF6S5LFURwwXOs5pi/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="button-link">Ver reserva de alojamiento</a>
+                        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-const rutas = [
-  { titulo:"⭐ Praia – Lagoa do Fogo (PRC02 SMI)", kms:11.0, desnivel:550, dificultad:"Moderada",
-    inicio:[37.7278,-25.4715],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/praia-lagoa-do-fogo",
-    wikiloc:"https://es.wikiloc.com/rutas-senderismo/prc2-smi-praia-lagoa-do-fogo-39830997" },
+                        <div class="card">
+                            <h3><span aria-label="Icono de coche" role="img">🚗</span> Coche de Alquiler</h3>
+                            <p><strong>Recogida:</strong> Aeropuerto de Ponta Delgada (PDL)</p>
+                            <p><strong>Hora:</strong> 24/08/2025 a las 16:00</p>
+                             <a href="https://drive.google.com/file/d/1QkhqgArifILGoy3Ssqdr2zIJaYq8Bo8u/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="button-link">Ver documento de reserva</a>
+                        </div>
+                        
+                        <div class="card card-highlight">
+                            <h3><span aria-label="Icono de ticket" role="img">🎟️</span> Permisos y Reservas</h3>
+                             <p><strong>RESERVA:</strong> Avistamiento de <strong>Cetáceos</strong>.</p>
+                             <p>Lunes, 25 de agosto: 8:30 a 12:00.</p>
+                             <a href="https://drive.google.com/file/d/1kRWHjwr50nT3tKFhiNzfvjzPZ5kK9oH1/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="button-link">Ver reserva</a>
+                             <hr>
+                             <p><strong>RESERVA:</strong> Baño termal en <strong>Caldeira Velha</strong>.</p>
+                             <p>Miércoles, 27 de agosto: 16:30 a 18:00.</p>
+                             <a href="https://drive.google.com/file/d/1CF_QrAcsZVh7iaPFRPbXGTL0vKywanXl/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="button-link">Ver ticket</a>
+                             <hr>
+                             <p><strong>PERMISO:</strong> Acceso sendero <strong>Pico da Vara</strong>.</p>
+                             <p>Sábado, 30 de agosto.</p>
+                             <p><strong>¡RESERVA OBLIGATORIA!</strong></p>
+                             <a href="https://drive.google.com/file/d/156h2DdGTVMZj5lKhqkRFNvOLLZDx4tgM/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="button-link">Ver permiso online</a>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="itinerary-panel" role="tabpanel" tabindex="0" aria-labelledby="itinerary-tab" hidden>
+                    <h2><span aria-label="Icono de mapa" role="img">🗺️</span> Itinerario Detallado</h2>
+                    <div class="accordion">
+                        
+                        <!-- Día 1 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" aria-expanded="false">
+                                Día 1: Domingo, 24/08/2025 - Llegada y Ponta Delgada
+                            </button>
+                            <div class="accordion-content">
+                               <h4>Tarde (15:40 - 20:00) | Instalación y Primer Paseo</h4>
+                               <ul>
+                                   <li><strong>15:40:</strong> Llegada a PDL, recogida del coche de alquiler.</li>
+                                   <li><strong>16:45:</strong> Check-in en La Casita Felizola (São Pedro).</li>
+                                   <li><strong>17:30:</strong> Compra en supermercado (ej. Continente) y <strong>comprar nevera portátil</strong>.</li>
+                                   <li><strong>18:45:</strong> Paseo por el centro de Ponta Delgada (Portas da Cidade, avenida marítima).</li>
+                               </ul>
+                               <h4>Noche (20:30 en adelante) | Cena de Bienvenida</h4>
+                               <ul>
+                                   <li><strong>Opción Restaurante:</strong> A Tasca (<strong>imprescindible reservar</strong>), Taberna Açor o Restaurante Alcides.</li>
+                                   <li><strong>Opción Casa:</strong> Cena tranquila en el alojamiento.</li>
+                               </ul>
+                            </div>
+                        </div>
 
-  { titulo:"⭐ Pico da Vara (PRC07 SMI)", kms:7.0, desnivel:500, dificultad:"Difícil",
-    inicio:[37.8003,-25.1312],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/pico-da-vara",
-    wikiloc:"https://es.wikiloc.com/rutas-senderismo/pico-da-vara-prc-07-smi-35130990" },
+                        <!-- Día 2 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" aria-expanded="false">
+                                Día 2: Lunes, 25/08/2025 - Gigantes del Atlántico y Cascada Escondida
+                            </button>
+                            <div class="accordion-content">
+                                <h4>Mañana (8:00 - 12:30) | Aventura Marina y Mercado</h4>
+                                <ul>
+                                    <li><strong>8:30 - 12:00:</strong> Avistamiento de Cetáceos desde el puerto de Ponta Delgada.</li>
+                                    <li><strong>12:15:</strong> Visita al <a href="https://www.futurismo.pt/es/blog/mercado-da-graca/" target="_blank" rel="noopener noreferrer">Mercado da Graça</a> para comprar pescado fresco.</li>
+                                </ul>
+                                <h4>Almuerzo (13:30 - 14:30) | Pícnic junto a las Caldeiras</h4>
+                                <ul>
+                                    <li>Pícnic en los merenderos de <a href="https://www.futurismo.pt/es/blog/caldeiras-da-ribeira-grande-una-joya-geotermica-oculta-en-las-azores/" target="_blank" rel="noopener noreferrer">Caldeiras da Ribeira Grande</a>.</li>
+                                </ul>
+                                <h4>Tarde (14:30 - 17:30) | Naturaleza y Agua de Fuego</h4>
+                                <ul>
+                                    <li>Exploración del <a href="https://www.futurismo.pt/es/blog/salto-do-cabrito-la-imponente-cascada-de-ribeira-grande/" target="_blank" rel="noopener noreferrer">Salto do Cabrito</a>. Opción de visita corta o ruta circular completa.</li>
+                                </ul>
+                                <table class="trek-table">
+                                    <caption>Trekking: Caldeiras da Ribeira Grande – Salto do Cabrito</caption>
+                                    <thead>
+                                        <tr>
+                                            <th>Dificultad</th>
+                                            <th>Distancia</th>
+                                            <th>Desnivel +</th>
+                                            <th>Duración</th>
+                                            <th>Enlace</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td data-label="Dificultad">Moderada</td>
+                                            <td data-label="Distancia">6,71 km</td>
+                                            <td data-label="Desnivel +">228 m</td>
+                                            <td data-label="Duración">~2 h</td>
+                                            <td data-label="Enlace"><a href="https://es.wikiloc.com/rutas-senderismo/pr-29-smi-caldeiras-da-ribeira-grande-salto-do-cabrito-san-miguel-azores-122661797" target="_blank" rel="noopener noreferrer">Ver Ruta</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <h4>Noche (20:30 en adelante) | Barbacoa Marinera</h4>
+                                <ul><li>Cena en casa con el pescado fresco del mercado.</li></ul>
+                            </div>
+                        </div>
 
-  { titulo:"⭐ Mata do Canário → Sete Cidades (PR4 SMI)", kms:11.8, desnivel:300, dificultad:"Moderada",
-    inicio:[37.8510,-25.7800],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/mata-do-canario-sete-cidades",
-    wikiloc:"https://es.wikiloc.com/rutas-senderismo/pr-4-smi-mata-do-canario-sete-cidades-18577395" },
+                        <!-- Día 3 -->
+                        <div class="accordion-item">
+                             <button class="accordion-header" aria-expanded="false">
+                                Día 3: Martes, 26/08/2025 - Senda de Miradores y Costa de Lava
+                            </button>
+                            <div class="accordion-content">
+                                <h4>Mañana (9:00 - 13:30) | Trekking en el Cráter</h4>
+                                <ul>
+                                    <li><strong>9:00:</strong> Salida hacia el <a href="https://www.futurismo.pt/es/blog/grota-do-inferno-vistas-paradisiacas-desde-el-interior-de-un-volcan-verde/" target="_blank" rel="noopener noreferrer">Miradouro da Boca do Inferno</a> para la foto icónica (¡consultar webcams antes!).</li>
+                                    <li><strong>10:00 - 13:00:</strong> Trekking: Mata do Canário – Sete Cidades (PRC04 SMI).</li>
+                                    <li><strong>13:00:</strong> <strong>Llamada al taxi previamente contactado</strong> para volver al coche.</li>
+                                </ul>
+                                <table class="trek-table">
+                                     <caption>Trekking: Mata do Canário – Sete Cidades</caption>
+                                    <thead><tr><th>Dificultad</th><th>Distancia</th><th>Desnivel +</th><th>Duración</th><th>Enlace</th></tr></thead>
+                                    <tbody><tr><td data-label="Dificultad">Moderada</td><td data-label="Distancia">11.8 km</td><td data-label="Desnivel +">300 m</td><td data-label="Duración">~3 h</td><td data-label="Enlace"><a href="https://es.wikiloc.com/rutas-senderismo/pr04-smi-mata-do-canario-sete-cidades-09-08-2018-81840523" target="_blank" rel="noopener noreferrer">Ver Ruta</a></td></tr></tbody>
+                                </table>
+                                <h4>Almuerzo (13:30 - 14:30) | Pícnic junto al Lago</h4>
+                                <ul><li>En las áreas de pícnic junto a la Lagoa Azul, en <a href="https://www.futurismo.pt/es/blog/lagoa-das-sete-cidades-la-laguna-encantada-e-inspiradora/" target="_blank" rel="noopener noreferrer">Sete Cidades</a>.</li></ul>
+                                <h4>Tarde (15:30 - 19:00) | Baño Volcánico y Puesta de Sol</h4>
+                                <ul>
+                                    <li>Baño en las <a href="https://www.futurismo.pt/es/blog/praia-dos-mosteiros/" target="_blank" rel="noopener noreferrer">piscinas naturales de lava de Mosteiros</a>. (<a href="https://maps.app.goo.gl/rM29dnE28bm8syrR9" target="_blank" rel="noopener noreferrer">Ubicación</a>)</li>
+                                    <li>Puesta de sol desde la playa o desde el <a href="https://maps.app.goo.gl/hcaa26hcQYZ7CB9z9" target="_blank" rel="noopener noreferrer">Miradouro da Ponta do Escalvado</a>.</li>
+                                </ul>
+                                <h4>Noche (20:30 en adelante) | Barbacoa de Carne Açoriana</h4>
+                                <ul><li>Cena relajada en casa con carne local.</li></ul>
+                            </div>
+                        </div>
 
-  { titulo:"⭐ Rota da Água – Janela do Inferno (PRC37 SMI)", kms:7.5, desnivel:250, dificultad:"Moderada",
-    inicio:[37.7875,-25.5971],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/rota-da-agua-janela-do-inferno",
-    wikiloc:"https://es.wikiloc.com/rutas-senderismo/prc-37-rota-da-agua-janela-do-inferno-13932537" },
+                        <!-- Día 4 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" aria-expanded="false">
+                                Día 4: Miércoles, 27/08/2025 - Lago de Fuego y Selva Termal
+                            </button>
+                            <div class="accordion-content">
+                                <h4>Mañana (9:00 - 14:00) | Trekking Salvaje</h4>
+                                <ul>
+                                    <li><strong>9:30 - 13:30:</strong> Trekking: Praia – Lagoa do Fogo (PRC02 SMI).</li>
+                                </ul>
+                                <table class="trek-table">
+                                    <caption>Trekking: Praia – Lagoa do Fogo</caption>
+                                    <thead><tr><th>Dificultad</th><th>Distancia</th><th>Desnivel +</th><th>Duración</th><th>Enlace</th></tr></thead>
+                                    <tbody><tr><td data-label="Dificultad">Moderada</td><td data-label="Distancia">11.0 km</td><td data-label="Desnivel +">550 m</td><td data-label="Duración">~4 h</td><td data-label="Enlace"><a href="https://es.wikiloc.com/rutas-senderismo/prc2-smi-praia-lagoa-do-fogo-39830997" target="_blank" rel="noopener noreferrer">Ver Ruta</a></td></tr></tbody>
+                                </table>
+                                <h4>Almuerzo (13:30 - 14:30) | Pícnic en lugar único</h4>
+                                <ul><li>Comida en la playa de arena blanca de la <a href="https://www.futurismo.pt/es/blog/lagoa-do-fogo-uno-de-los-lagos-mas-pintorescos-de-las-azores/" target="_blank" rel="noopener noreferrer">Lagoa do Fogo</a>.</li></ul>
+                                <h4>Tarde (15:00 - 18:30) | Vistas y Relax Termal</h4>
+                                <ul>
+                                    <li><strong>15:00:</strong> Subir a los miradores superiores de Lagoa do Fogo.</li>
+                                    <li><strong>16:30 - 18:00:</strong> Baño en las pozas termales de <a href="https://www.futurismo.pt/es/blog/caldeira-velha-el-monumento-natural-que-hay-que-visitar-en-las-azores/" target="_blank" rel="noopener noreferrer">Caldeira Velha</a> (<strong>RESERVADO</strong>).</li>
+                                </ul>
+                                <h4>Noche (20:30 en adelante) | Cena de Recompensa</h4>
+                                <ul><li>Opciones: Restaurante Associação Agrícola (carne) o Bar Caloura (pescado).</li></ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Día 5 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" aria-expanded="false">
+                                Día 5: Jueves, 28/08/2025 - Inmersión en el Valle de Furnas
+                            </button>
+                            <div class="accordion-content">
+                                <h4>Mañana (9:00 - 13:00) | El Ritual del Cozido</h4>
+                                <ul>
+                                    <li><strong>10:00:</strong> Ruta Lagoa das Furnas y <a href="https://www.futurismo.pt/es/blog/salto-do-rosal-la-cascada-de-mata-jardim-jose-do-canto/" target="_blank" rel="noopener noreferrer">Parque Mata Jardim José do Canto</a>.</li>
+                                    <li><strong>13:30:</strong> Presenciar cómo desentierran el <a href="https://www.futurismo.pt/es/blog/cozido-das-furnas/?utm_source=perplexity" target="_blank" rel="noopener noreferrer">Cozido das Furnas</a> en la <a href="https://www.futurismo.pt/es/blog/caldeiras-das-furnas-que-son-y-que-visitar/" target="_blank" rel="noopener noreferrer">zona de las caldeiras</a>.</li>
+                                </ul>
+                                <table class="trek-table">
+                                    <caption>Trekking: Lagoa das Furnas y Parque</caption>
+                                    <thead><tr><th>Dificultad</th><th>Distancia</th><th>Desnivel +</th><th>Duración</th><th>Enlace</th></tr></thead>
+                                    <tbody><tr><td data-label="Dificultad">Moderada</td><td data-label="Distancia">11.0 km</td><td data-label="Desnivel +">550 m</td><td data-label="Duración">~4 h</td><td data-label="Enlace"><a href="https://es.wikiloc.com/rutas-senderismo/lagoa-das-furnas-parque-mata-jardim-jose-do-canto-con-cascata-do-rosal-caldeiras-78590325" target="_blank" rel="noopener noreferrer">Ver Ruta</a></td></tr></tbody>
+                                </table>
+                                <h4>Almuerzo (14:00 - 15:00) | Sabor Volcánico</h4>
+                                <ul><li>Comer el Cozido en un restaurante del pueblo (<strong>¡reserva obligatoria con 24h de antelación!</strong>).</li></ul>
+                                <h4>Tarde (15:00 - 19:00) | Jardines y Aguas Férreas</h4>
+                                <ul>
+                                    <li>Tarde en el <a href="https://www.futurismo.pt/es/blog/terra-nostra-uno-de-los-jardines-mas-bellos-del-mundo/" target="_blank" rel="noopener noreferrer">Parque Terra Nostra</a>.</li>
+                                    <li>Baño en su <a href="https://www.futurismo.pt/es/blog/piscina-termal-del-parque-terra-nostra-relajate-en-sus-calidas-aguas/" target="_blank" rel="noopener noreferrer">gran piscina termal</a> (<strong>Llevar bañador viejo</strong>).</li>
+                                    <li><strong>18:30:</strong> Paseo por las caldeiras del centro del pueblo.</li>
+                                </ul>
+                                <h4>Noche (21:00 en adelante) | Cena Ligera</h4>
+                                <ul><li>Cena muy ligera en casa tras el contundente Cozido.</li></ul>
+                            </div>
+                        </div>
 
-  { titulo:"Serra Devassa (PRC05 SMI)", kms:5.0, desnivel:170, dificultad:"Fácil",
-    inicio:[37.8520,-25.7540],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/serra-devassa",
-    wikiloc:"https://es.wikiloc.com/rutas-senderismo/prc05-sao-miguel-serra-devassa-55107613" },
+                        <!-- Día 6 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" aria-expanded="false">
+                                Día 6: Viernes, 29/08/2025 - Cascadas del Sureste y Costa Sur
+                            </button>
+                            <div class="accordion-content">
+                                <h4>Mañana (9:00 - 12:30) | Trekking a la Cascada</h4>
+                                <ul><li><strong>10:15 - 12:30:</strong> Trekking: Faial da Terra – <a href="https://www.futurismo.pt/es/blog/salto-do-prego-la-paradisiaca-cascada-de-faial-da-terra/?utm_source=chatgpt.com" target="_blank" rel="noopener noreferrer">Salto do Prego</a> (PRC09 SMI), con posible baño en la cascada.</li></ul>
+                                <table class="trek-table">
+                                    <caption>Trekking: Faial da Terra – Salto do Prego</caption>
+                                    <thead><tr><th>Dificultad</th><th>Distancia</th><th>Desnivel +</th><th>Duración</th><th>Enlace</th></tr></thead>
+                                    <tbody><tr><td data-label="Dificultad">Moderada</td><td data-label="Distancia">12,5 km</td><td data-label="Desnivel +">380 m</td><td data-label="Duración">~3.5 h</td><td data-label="Enlace"><a href="https://es.wikiloc.com/rutas-senderismo/ribeira-do-faial-da-terra-salto-do-prego-salto-do-cagarrao-y-sanguinho-45097878" target="_blank" rel="noopener noreferrer">Ver Ruta</a></td></tr></tbody>
+                                </table>
+                                <h4>Almuerzo (13:30 - 14:30) | Pícnic en el Pueblo</h4>
+                                <ul><li>Pícnic en el puerto de <a href="https://www.futurismo.pt/es/blog/faial-da-terra/" target="_blank" rel="noopener noreferrer">Faial da Terra</a>.</li></ul>
+                                <h4>Tarde (14:30 - 18:00) | Explorando la Costa Sur</h4>
+                                <ul>
+                                    <li>Visita a <a href="https://www.futurismo.pt/es/blog/vila-franca-do-campo/" target="_blank" rel="noopener noreferrer">Vila Franca do Campo</a>, ver su famoso <a href="https://www.turismoazores.es/isla-de-sao-miguel/isla-de-sao-miguel-islote-de-vila-franca-do-campo/" target="_blank" rel="noopener noreferrer">islote</a> y probar las queijadas.</li>
+                                    <li>Parada en playas como Praia de Água d'Alto.</li>
+                                </ul>
+                                <h4>Noche (20:30 en adelante) | Cena Despedida del Este</h4>
+                                <ul><li>Cena variada en casa con productos locales de los pueblos del este.</li></ul>
+                            </div>
+                        </div>
 
-  { titulo:"⭐ Salto do Cabrito (circular)", kms:8.5, desnivel:400, dificultad:"Moderada",
-    inicio:[37.7800,-25.4880],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/caldeiras-da-ribeira-grande-salto-do-cabrito",
-    wikiloc:"https://es.wikiloc.com/rutas-senderismo/salto-do-cabrito-10284940" },
+                        <!-- Día 7 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" aria-expanded="false">
+                                Día 7: Sábado, 30/08/2025 - Ascenso al Techo de la Isla y Costa Nordeste
+                            </button>
+                            <div class="accordion-content">
+                                <h4>Mañana (8:00 - 13:00) | Trekking al <a href="https://www.futurismo.pt/es/blog/pico-da-vara-bienvenido-a-la-azotea-de-las-islas-sao-miguel/" target="_blank" rel="noopener noreferrer">Pico da Vara</a></h4>
+                                <ul>
+                                    <li><strong>¡RESERVA OBLIGATORIA!</strong> El <a href="https://trails.visitazores.com/es/senderos-de-las-azores/sao-miguel/pico-da-vara" target="_blank" rel="noopener noreferrer">permiso online</a> es necesario para acceder.</li>
+                                    <li><strong>9:00 - 12:30:</strong> Ascenso al Pico da Vara (PRC07 SMI) desde el <a href="https://www.google.es/maps/place/Casa+de+Guarda+da+Reserva+Florestal+da+Atalhada+(Freguesia+de+Santo+Ant%C3%B3nio+de+Nordestinho)/@37.8360664,-25.2195835,17z/data=!3m1!4b1!4m6!3m5!1s0xb5ce1d9afe8dde7:0x491a48d64f46450d!8m2!3d37.8360622!4d-25.2170086!16s%2Fg%2F11lgx9686n?hl=es&entry=tts" target="_blank" rel="noopener noreferrer">inicio del sendero</a>.</li>
+                                    <li>Consultar <a href="https://servicos-sraa.azores.gov.pt/doit/store/temp/picovara/PRC-07-SMI-PicoVara.jpg" target="_blank" rel="noopener noreferrer">mapa oficial</a> y <a href="https://drive.google.com/file/d/10JhJU2CzJTe0IugmuRjXFyxt48XQTBaG/view" target="_blank" rel="noopener noreferrer">ruta descargada</a>.</li>
+                                </ul>
+                                <table class="trek-table">
+                                     <caption>Trekking: Pico da Vara</caption>
+                                    <thead><tr><th>Dificultad</th><th>Distancia</th><th>Desnivel +</th><th>Duración</th><th>Enlace</th></tr></thead>
+                                    <tbody><tr><td data-label="Dificultad">Difícil</td><td data-label="Distancia">7.0 km</td><td data-label="Desnivel +">500 m</td><td data-label="Duración">~3.5 h</td><td data-label="Enlace"><a href="https://es.wikiloc.com/rutas-senderismo/pico-da-vara-prc-07-smi-35130990" target="_blank" rel="noopener noreferrer">Ver Ruta</a></td></tr></tbody>
+                                </table>
+                                <h4>Almuerzo (13:30 - 14:30) | Pícnic de Cima</h4>
+                                <ul><li>Pícnic en la <a href="https://www.futurismo.pt/es/blog/nordeste-acantilados-verdes-y-esplendor-costero/" target="_blank" rel="noopener noreferrer">región del Nordeste</a>.</li></ul>
+                                <h4>Tarde (15:00 - 18:30) | Cascadas, Té y Acantilados</h4>
+                                <ul>
+                                    <li><strong>15:00:</strong> Visita al <a href="https://www.futurismo.pt/es/blog/ribeira-dos-caldeiroes-una-escapada-a-la-naturaleza-accesible-para-todos/" target="_blank" rel="noopener noreferrer">Parque Natural da Ribeira dos Caldeirões</a>.</li>
+                                    <li><strong>16:30:</strong> Parada en las <a href="https://www.futurismo.pt/es/blog/plantacion-de-te-gorreana/" target="_blank" rel="noopener noreferrer">Plantações de Chá Gorreana</a>.</li>
+                                    <li><strong>17:45:</strong> Vistas desde el <a href="https://www.futurismo.pt/es/blog/mirador-de-santa-iria/" target="_blank" rel="noopener noreferrer">Miradouro de Santa Iria</a>.</li>
+                                </ul>
+                                <h4>Noche (20:30 en adelante) | Última Cena Azoriana</h4>
+                                <ul>
+                                    <li><strong>Opción Restaurante:</strong> Cena especial de despedida en Ponta Delgada.</li>
+                                    <li><strong>Opción Casa:</strong> Última gran barbacoa.</li>
+                                </ul>
+                            </div>
+                        </div>
 
-  { titulo:"⭐ Lagoa das Furnas (PRC06 SMI)", kms:9.3, desnivel:160, dificultad:"Fácil",
-    inicio:[37.7690,-25.3300],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/furnas",
-    wikiloc:"https://es.wikiloc.com/rutas-senderismo/prc06-smi-lagoa-das-furnas-55406349" },
+                        <!-- Día 8 -->
+                         <div class="accordion-item">
+                            <button class="accordion-header" aria-expanded="false">
+                                Día 8: Domingo, 31/08/2025 - Vuelo de Regreso
+                            </button>
+                            <div class="accordion-content">
+                                <h4>Mañana (7:00 - 9:00)</h4>
+                                <ul>
+                                    <li>Desayuno, últimas maletas y desplazamiento al aeropuerto de Ponta Delgada (PDL).</li>
+                                    <li>Vuelo de regreso a las 09:50.</li>
+                                </ul>
+                            </div>
+                        </div>
 
-  { titulo:"Trilho do Chá Gorreana (PRC28 SMI)", kms:3.8, desnivel:160, dificultad:"Fácil",
-    inicio:[37.8230,-25.3120],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/cha-gorreana",
-    wikiloc:"https://es.wikiloc.com/rutas-senderismo/cha-gorreana-prc-28-smi-26333771" },
+                    </div>
+                </section>
+                
+                <section id="map-panel" role="tabpanel" tabindex="0" aria-labelledby="map-tab" hidden>
+                    <h2><span aria-label="Icono de chincheta" role="img">📍</span> Mapa Interactivo</h2>
+                    <div id="map"></div>
+                     <div id="map-legend">
+                        <p><span class="legend-icon alojamiento-icon" aria-label="Icono de casa"></span> Alojamiento</p>
+                        <p><span class="legend-icon trekking-icon"></span> Inicio de Ruta</p>
+                        <p><span class="legend-icon interes-icon"></span> Punto de Interés</p>
+                    </div>
+                </section>
 
-  { titulo:"Praia da Viola (PR27 SMI) – circular", kms:7.0, desnivel:300, dificultad:"Moderada",
-    inicio:[37.8140,-25.3125],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/praia-da-viola",
-    wikiloc:"https://es.wikiloc.com/rutas-senderismo/trilho-da-praia-da-viola-pr-27-smi-molinos-e-cascata-maia-sao-miguel-132148943" },
+                <section id="gastro-panel" role="tabpanel" tabindex="0" aria-labelledby="gastro-tab" hidden>
+                    <h2><span aria-label="Icono de plato y cubiertos" role="img">🍽️</span> Gastronomía</h2>
+                    <div class="gastro-grid">
+                        <div class="card">
+                            <h3>Restaurantes Recomendados por Zona</h3>
+                            <h4>Cerca del Alojamiento (São Pedro)</h4>
+                            <ul>
+                                <li>Restaurante o Emigrante in Capelas</li>
+                                <li>4 Plátanos Café Restaurante in Santo António</li>
+                            </ul>
+                            <h4>En Ponta Delgada (o muy cerca)</h4>
+                            <ul>
+                                <li>A Tasca</li>
+                                <li>Restaurante Mariserra</li>
+                                <li>Cais 20</li>
+                            </ul>
+                            <h4>En la zona de Ribeira Grande (Costa Norte)</h4>
+                             <ul>
+                                <li>Restaurante O Silva</li>
+                             </ul>
+                             <h4>En la zona de Furnas</h4>
+                             <ul>
+                                <li>Tony's</li>
+                                <li>Summer Breeze</li>
+                             </ul>
+                             <h4>Cerca de Vila Franca do Campo (Costa Sur)</h4>
+                              <ul>
+                                <li>Bar Caloura</li>
+                             </ul>
+                        </div>
+                        <div class="card">
+                             <h3>Productos Locales para Barbacoa en Casa</h3>
+                             <h4>Carne</h4>
+                             <ul><li>Bife de Vazia o Entrecosto de Carne dos Açores IGP.</li></ul>
+                             <h4>Pescado</h4>
+                             <ul><li>De temporada: chernes, goraz, boca negra, chicharros y atún.</li></ul>
+                             <h4>Embutidos</h4>
+                             <ul><li>Linguiça y Morcela (morcilla con piña).</li></ul>
+                             <h4>Queso</h4>
+                             <ul><li>Queso de São Jorge y Queijo Fresco local con Pimenta da Terra.</li></ul>
+                             <h4>Acompañamientos</h4>
+                             <ul><li>Bolo Lêvedo a la parrilla con mantequilla de ajo.</li><li>Piñas de las Azores.</li></ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="tips-panel" role="tabpanel" tabindex="0" aria-labelledby="tips-tab" hidden>
+                    <h2><span aria-label="Icono de bombilla" role="img">💡</span> Consejos y Enlaces</h2>
+                    <div class="info-grid">
+                        <div class="card">
+                            <h3>Meteo y Webcams</h3>
+                            <p>Es fundamental consultar la meteorología y las webcams antes de cada excursión, especialmente en las zonas de montaña.</p>
+                            <a href="https://www.ipma.pt/en/otempo/prev.localidade.hora/index.jsp#S%C3%A3o%20Miguel&Ponta%20Delgada" target="_blank" rel="noopener noreferrer" class="button-link">Previsión Meteo (IPMA)</a>
+                            <a href="https://spotazores.com/en/webcams/sao-miguel/" target="_blank" rel="noopener noreferrer" class="button-link">Webcams de São Miguel</a>
+                        </div>
+                         <div class="card">
+                            <h3>Checklist de Consejos Clave</h3>
+                            <ul>
+                                <li>Reservar con antelación restaurantes populares como "A Tasca".</li>
+                                <li>Comprar una nevera portátil el primer día para picnics y mantener el pescado fresco.</li>
+                                <li>Llevar un bañador viejo para las aguas termales férreas (Parque Terra Nostra).</li>
+                                <li>Contactar con un taxi el día anterior para la vuelta del trekking de Sete Cidades.</li>
+                                <li>Reservar el Cozido das Furnas con 24 horas de antelación.</li>
+                                <li>No olvidar el permiso online para subir al Pico da Vara.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Proyecto web estático generado para documentar el plan de viaje. Desplegado en GitHub Pages.</p>
+    </footer>
 
-  { titulo:"⭐ Ribeira Funda → Praia da Viola → Maia (costa norte)", kms:8.7, desnivel:450, dificultad:"Moderada",
-    inicio:[37.8700,-25.3050],
-    wikiloc:"https://www.wikiloc.com/walking-trails/ribeira-funda-miradouro-da-eira-praia-da-viola-maia-165152532" },
-
-  { titulo:"Trilho do Agrião (PR12 SMI) – Povoação → Ribeira Quente", kms:15.3, desnivel:800, dificultad:"Difícil",
-    inicio:[37.7470,-25.2355],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/agriao",
-    wikiloc:"https://www.wikiloc.com/hiking-trails/trilho-do-agriao-prc-12-smi-ribeira-quente-san-miguel-azores-122924020" },
-
-  { titulo:"⭐ Faial da Terra → Salto do Prego + Salto do Cagarrão (extendida)", kms:6.5, desnivel:380, dificultad:"Moderada",
-    inicio:[37.7618,-25.1885],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/sanguinho",
-    wikiloc:"https://www.wikiloc.com/hiking-trails/faial-da-terra-salto-do-prego-salto-do-cagarao-189035491" },
-
-  { titulo:"Lagoa do Congro + Lagoa dos Nenúfares", kms:3.5, desnivel:100, dificultad:"Fácil",
-    inicio:[37.7566,-25.4078],
-    wikiloc:"https://pt.wikiloc.com/trilhas-trekking/lagoa-do-congro-13644473" },
-
-  { titulo:"Ponta da Madrugada → Ponta do Sossego (costa Nordeste)", kms:9.0, desnivel:250, dificultad:"Moderada",
-    inicio:[37.8056,-25.1273],
-    wikiloc:"https://pt.wikiloc.com/trilhas-caminhada/ponta-do-sossego-17922381" },
-
-  { titulo:"Pico da Cruz (Sete Cidades)", kms:4.0, desnivel:200, dificultad:"Moderada",
-    inicio:[37.8350,-25.7586],
-    oficial:"https://trails.visitazores.com/en/trails-azores/sao-miguel/mata-do-canario-sete-cidades",
-    wikiloc:"https://pt.wikiloc.com/trilhas-trekking/lagoa-azul-pico-da-cruz-lagoa-do-canario-desde-sete-cidades-213123427" }
-];
-
-const spots = [
-  { nombre:"Miradouro da Boca do Inferno", categoria:"Mirador", coords:[37.8647,-25.7708] },
-  { nombre:"Lagoa do Fogo (miradores)", categoria:"Lago", coords:[37.7700,-25.4650] },
-  { nombre:"Caldeira Velha", categoria:"Termas/Cascada", coords:[37.7816,-25.4996] },
-  { nombre:"Ponta da Ferraria", categoria:"Costa/Termal", coords:[37.8608,-25.8525] },
-  { nombre:"Ilhéus dos Mosteiros", categoria:"Costa", coords:[37.8889,-25.8344] },
-  { nombre:"Parque Ribeira dos Caldeirões", categoria:"Parque/Cascadas", coords:[37.8647,-25.2120] },
-  { nombre:"Miradouro de Santa Iria", categoria:"Mirador", coords:[37.8397,-25.4011] },
-  { nombre:"Pico do Ferro (Furnas)", categoria:"Mirador", coords:[37.7809,-25.3289] },
-  { nombre:"Salto do Cabrito", categoria:"Cascada", coords:[37.7802,-25.4885] },
-  { nombre:"Poço Azul (Nordeste)", categoria:"Poza", coords:[37.8150,-25.1295] }
-];
-
-const fmt = (n) => typeof n === "number" ? n.toFixed(n % 1 ? 1 : 0) : "";
-const gmaps = ([lat, lon]) => `https://www.google.com/maps?q=${lat},${lon}`;
-const formatCoords = ([lat, lon]) => `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-
-(function renderTables() {
-  const tbR = document.getElementById('tbody-rutas');
-  rutas.forEach(r => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${r.titulo}</td>
-      <td>${fmt(r.kms)}</td>
-      <td>${fmt(r.desnivel)}</td>
-      <td><span class="difficulty-chip difficulty-${r.dificultad}">${r.dificultad}</span></td>
-      <td>
-        ${r.oficial ? `<a href="${r.oficial}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">Oficial</a>` : ""}
-        ${r.wikiloc ? `<a href="${r.wikiloc}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Wikiloc</a>` : ""}
-      </td>`;
-    tbR.appendChild(tr);
-  });
-
-  const tbS = document.getElementById('tbody-spots');
-  spots.forEach(s => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${s.nombre}</td>
-      <td>${s.categoria}</td>
-      <td>${formatCoords(s.coords)}</td>
-      <td><a href="${gmaps(s.coords)}" target="_blank" rel="noopener" class="btn btn-sm btn-success">Abrir en Maps</a></td>`;
-    tbS.appendChild(tr);
-  });
-})();
-
-let map;
-document.addEventListener('DOMContentLoaded', () => {
-  const mapTab = document.getElementById('mapa-tab');
-  mapTab.addEventListener('shown.bs.tab', function (e) {
-    if (!map) {
-      map = L.map('map').setView([37.78, -25.50], 10);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-      }).addTo(map);
-
-      const rutaIcon = L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-      });
-
-      const spotIcon = L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-      });
-
-      const allMarkers = [];
-
-      rutas.forEach(r => {
-        const mk = L.marker(r.inicio, {icon: rutaIcon}).addTo(map)
-          .bindPopup(`
-            <b>${r.titulo}</b><br>
-            ${fmt(r.kms)} km · +${fmt(r.desnivel)} m · ${r.dificultad}<br>
-            ${r.oficial ? `<a href="${r.oficial}" target="_blank" rel="noopener">Oficial</a>` : ''}
-            ${r.wikiloc ? `${r.oficial ? ' · ' : ''}<a href="${r.wikiloc}" target="_blank" rel="noopener">Wikiloc</a>` : ''}
-          `);
-        allMarkers.push(mk);
-      });
-
-      spots.forEach(s => {
-        const mk = L.marker(s.coords, {icon: spotIcon}).addTo(map)
-          .bindPopup(`<b>${s.nombre}</b><br>${s.categoria}`);
-        allMarkers.push(mk);
-      });
-
-      if (allMarkers.length) {
-        const group = L.featureGroup(allMarkers);
-        map.fitBounds(group.getBounds().pad(0.1));
-      }
-    }
-  });
-});
-</script>
+    <script src="script.js"></script>
 </body>
 </html>
