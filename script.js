@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tab.addEventListener('click', handleTabClick);
     });
 
-    function handleTabClick(event) {
+    function activateTab(tabElement, { focus = true } = {}) {
         // Hide all tab panels
         tabPanels.forEach(panel => {
             panel.hidden = true;
@@ -19,13 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Show the selected panel
-        const { id } = event.currentTarget;
+        const { id } = tabElement;
         const panel = document.querySelector(`[aria-labelledby="${id}"]`);
-        panel.hidden = false;
+        if (panel) {
+            panel.hidden = false;
+        }
 
         // Mark the current tab as selected
-        event.currentTarget.setAttribute('aria-selected', 'true');
-        event.currentTarget.setAttribute('tabindex', '0');
+        tabElement.setAttribute('aria-selected', 'true');
+        tabElement.setAttribute('tabindex', '0');
+
+        if (focus) {
+            tabElement.focus();
+        }
 
         // Lazy load map
         if (id === 'map-tab' && !window.mapInitialized) {
@@ -33,6 +39,49 @@ document.addEventListener('DOMContentLoaded', () => {
             window.mapInitialized = true;
         }
     }
+
+    function handleTabClick(event) {
+        activateTab(event.currentTarget);
+    }
+
+    document.querySelectorAll('[data-open-tab]').forEach(trigger => {
+        trigger.addEventListener('click', (event) => {
+            event.preventDefault();
+            const tabId = trigger.dataset.openTab;
+            const tabToActivate = document.getElementById(tabId);
+            if (tabToActivate) {
+                activateTab(tabToActivate, { focus: true });
+                const targetId = trigger.getAttribute('href')?.replace('#', '') || '';
+                const targetPanel = targetId ? document.getElementById(targetId) : null;
+                if (targetPanel) {
+                    if (targetId && typeof history.replaceState === 'function') {
+                        history.replaceState(null, '', `#${targetId}`);
+                    }
+                    setTimeout(() => {
+                        targetPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 120);
+                }
+            }
+        });
+    });
+
+    function activateTabFromHash(hash) {
+        if (!hash) return;
+        const panel = document.querySelector(hash);
+        if (!panel) return;
+        const tabId = panel.getAttribute('aria-labelledby');
+        if (!tabId) return;
+        const tabToActivate = document.getElementById(tabId);
+        if (tabToActivate) {
+            activateTab(tabToActivate, { focus: false });
+        }
+    }
+
+    activateTabFromHash(window.location.hash);
+
+    window.addEventListener('hashchange', () => {
+        activateTabFromHash(window.location.hash);
+    });
 
     // --- Accordion ---
     const accordionHeaders = document.querySelectorAll('.accordion-header');
